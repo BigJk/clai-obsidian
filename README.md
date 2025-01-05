@@ -8,6 +8,9 @@
 
 ![Screenshot](./.github/screenshot.png)
 
+> [!IMPORTANT]  
+> [Watch the video to see it in action](https://streamable.com/mj43tn)
+
 > [!NOTE]  
 > In the above example the left workflow results in the right result when run. The template syntax essentially tells the template to insert the ``setting`` note where the basic information about the setting is stored. Then the notes ``race``, ``background``and ``cities`` contain said content as list. The Template will take random lines from them before sending it to the LLM. For example ``{{ call .SampleLines "./races.md" 1 }}`` means ``to take 1 random line from the races.md note and put it there``.
 >
@@ -22,7 +25,6 @@ When the plugin is installed, you need to go to the settings:
 4. Select the model you want to use.
 
 ## Usage
-
 
 ![Screenshot](./.github/screenshot_commands.png)
 
