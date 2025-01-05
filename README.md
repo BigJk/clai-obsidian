@@ -1,5 +1,7 @@
 # CL(A)I for Obsidian
 
+![Screenshot](./.github/screenshot.png)
+
 This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other use cases.
 
 For more information, visit the [CL(A)I documentation](https://github.com/BigJk/clai).
@@ -13,6 +15,9 @@ When the plugin is installed, you need to go to the settings:
 4. Select the model you want to use.
 
 ## Usage
+
+
+![Screenshot](./.github/screenshot_commands.png)
 
 - After installing the plugin, you can use the `Run Workflow` command to execute a workflow. This allows you to select the desired workflow, and the result will be inserted at the current cursor position or replace the current selection.
 - For testing or debugging purposes, use the `Run Workflow (Dry)` command. This inserts the content that would be sent to the API at the current cursor position without actually executing the workflow.
