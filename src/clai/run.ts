@@ -1,5 +1,5 @@
 import { App } from 'obsidian';
-import { CLAISettings } from './types';
+import { CLAISettings } from '../types';
 
 // @ts-ignore
 const process = (window as any).require('process');
@@ -7,6 +7,15 @@ const process = (window as any).require('process');
 // @ts-ignore
 const childProcess = (window as any).require('child_process');
 
+/**
+ * Runs CLAI
+ * @param settings CLAI settings
+ * @param file The file to run CLAI on
+ * @param userInput The user input
+ * @param app The Obsidian app
+ * @param opts Options for running CLAI
+ * @returns The output of CLAI
+ */
 export async function runCLAI(settings: CLAISettings, file: string, userInput: any, app: App, opts?: { dry: boolean }): Promise<string> {
     process.env.CLAI_URL = settings.url;
     process.env.CLAI_APIKEY = settings.apiKey;
@@ -38,6 +47,11 @@ export async function runCLAI(settings: CLAISettings, file: string, userInput: a
     });
 }
 
+/**
+ * Runs CLAI version
+ * @param app The Obsidian app
+ * @returns The version of CLAI
+ */
 export async function runCLAIVersion(app: App): Promise<string> {
     // Get the vault's base path
     const basePath = (app.vault.adapter as any).basePath;

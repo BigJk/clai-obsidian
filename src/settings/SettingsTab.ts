@@ -1,8 +1,8 @@
 import CLAI from 'main';
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import { DEFAULT_URLS } from 'src/constants';
-import { fetchCLAI } from 'src/fetch-clai';
-import { runCLAIVersion } from 'src/run-clai';
+import { fetchCLAI } from 'src/clai/fetch';
+import { runCLAIVersion } from 'src/clai/run';
 import { CLAISettings } from 'src/types';
 
 export class SettingsTab extends PluginSettingTab {

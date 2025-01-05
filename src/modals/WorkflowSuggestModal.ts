@@ -1,6 +1,6 @@
-import { App, FuzzySuggestModal, TFile } from 'obsidian';
 import CLAI from 'main';
-import { WorkflowInputModal } from './WorkflowInputModal';
+import { App, FuzzyMatch, FuzzySuggestModal, TFile } from 'obsidian';
+import { WorkflowInputModal } from 'src/modals/WorkflowInputModal';
 
 export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
     plugin: CLAI;
@@ -25,6 +25,29 @@ export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
 
     getItemText(file: TFile): string {
         return file.basename;
+    }
+
+    renderSuggestion(item: FuzzyMatch<TFile>, el: HTMLElement): void {
+        const file = item.item;
+        const cache = this.app.metadataCache.getFileCache(file);
+
+        const container = el.createDiv({ cls: 'suggestion-content' });
+        const title = container.createDiv({ cls: 'suggestion-title' });
+        title.setText(file.basename);
+
+        if (cache?.frontmatter) {
+            const { name, description } = cache.frontmatter;
+            if (name) {
+                title.setText(name);
+            }
+            if (description) {
+                let div = container.createDiv({
+                    text: description
+                });
+                div.style.opacity = '0.5';
+                div.style.zoom = '0.8';
+            }
+        }
     }
 
     async onChooseItem(file: TFile) {

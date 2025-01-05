@@ -1,6 +1,6 @@
 import { App, Modal, MarkdownView, TFile } from 'obsidian';
 import CLAI from 'main';
-import { runCLAI } from 'src/run-clai';
+import { runCLAI } from 'src/clai/run';
 
 export class WorkflowInputModal extends Modal {
     file: TFile;
