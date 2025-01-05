@@ -1,10 +1,13 @@
 # CL(A)I for Obsidian
 
+*This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other repetitive use cases.*
+
+---
+
 ![Screenshot](./.github/screenshot.png)
 
-This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other use cases.
-
-For more information, visit the [CL(A)I documentation](https://github.com/BigJk/clai).
+> [!NOTE]  
+> In the above example the left workflow results in the right result when run. The template syntax essentially tells the template to insert the ``settings`` note where the basic information about the setting is stored. Then the notes ``race``, ``background``and ``cities`` contain said content as list. The Template will take random lines from them before sending it to the LLM.
 
 ## Setup
 
