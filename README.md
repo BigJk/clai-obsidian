@@ -111,8 +111,9 @@ I didn't know about the awesome [Text Generator](https://github.com/nhaouari/obs
 - `CL(A)I` focuses more on the ``take random notes from folder``, ``take random lines from note``, ``insert note X here`` use cases to build a interesting base for the LLMs. I think `Text Generator` doesn't cover this in the same way.
 - `Text Generator` has a template hub where you can share your own templates, while `CL(A)I` doesn't
 - `CL(A)I` has a different syntax based on go's [html/template](https://pkg.go.dev/html/template) 
+- `CL(A)I` lets you define system, user and assistant messages however you want on per template basis. I think `Text Generator` doesn't let you do this.
 - Both support a wide range of models
-- `Text Generator` is around longer and more mature than `CL(A)I`
+- `Text Generator` is around longer, has more diverse features and more mature than `CL(A)I`
 
 ## Found the project useful? :smiling_face_with_three_hearts:
 
