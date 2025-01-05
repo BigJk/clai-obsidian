@@ -1,5 +1,7 @@
 # CL(A)I for Obsidian
 
+[![Discord](https://img.shields.io/discord/1099310842564059168?label=discord)](https://discord.gg/XpDvfvVuB2) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/BigJk/clai-obsidian)](https://github.com/BigJk/clai-obsidian/releases)
+
 *This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other repetitive use cases.*
 
 ---
@@ -109,3 +111,7 @@ I didn't know about the awesome [Text Generator](https://github.com/nhaouari/obs
 - `CL(A)I` has a different syntax based on go's [html/template](https://pkg.go.dev/html/template) 
 - Both support a wide range of models
 - `Text Generator` is around longer and more mature than `CL(A)I`
+
+## Found the project useful? :smiling_face_with_three_hearts:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A763FPT)
