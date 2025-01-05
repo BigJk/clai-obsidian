@@ -1,28 +1,8 @@
-import { App, Editor, MarkdownView, Modal, TextComponent, Plugin, PluginSettingTab, Setting, TextFileView, FuzzySuggestModal, TFile } from 'obsidian';
-import { fetchCLAI } from './src/fetch-clai';
-import { runCLAI, runCLAIVersion } from './src/run-clai';
-
-export interface CLAISettings {
-	provider: 'openai' | 'openrouter' | 'custom';
-	apiKey: string;
-	url: string;
-	model: string;
-	workflowFolder: string;
-}
-
-const DEFAULT_SETTINGS: CLAISettings = {
-	provider: 'openai',
-	apiKey: '',
-	url: 'https://api.openai.com/v1/chat/completions',
-	model: 'gpt-4o-mini',
-	workflowFolder: 'clai-workflows',
-}
-
-const DEFAULT_URLS: Record<CLAISettings['provider'], string> = {
-	'openai': 'https://api.openai.com/v1/chat/completions',
-	'openrouter': 'https://api.openrouter.ai/v1/chat/completions',
-	'custom': 'https://your-custom-api.com/v1/chat/completions',
-}
+import { MarkdownView, Plugin, TextFileView } from 'obsidian';
+import { DEFAULT_SETTINGS } from 'src/constants';
+import { WorkflowSuggestModal } from 'src/modals/WorkflowSuggestModal';
+import { SettingsTab } from 'src/settings/SettingsTab';
+import { CLAISettings } from 'src/types';
 
 export default class CLAI extends Plugin {
 	settings: CLAISettings;
@@ -61,11 +41,45 @@ export default class CLAI extends Plugin {
 				}
 			}
 		});
-		this.addSettingTab(new SettingsTag(this.app, this));
+
+		this.addCommand({
+			id: 'clai-insert-boilerplate',
+			name: 'Insert Boilerplate',
+			checkCallback: (checking: boolean) => {
+				const editor = this.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
+				if (editor) {
+					if (!checking) {
+						editor.replaceSelection(`# CLAI::SYSTEM
+
+You are a helpful assistant that ...
+
+# CLAI::USER
+
+...
+
+{{ call .File "./some_file.md" }}
+{{ call .SampleFiles "./some_folder/" 3 false }}
+{{ .Clipboard }}
+{{ .ActiveTitle }}
+{{ .ActiveNote}}
+
+# CLAI::ASSISTANT
+
+Thank you for the examples! Now tell me about ...
+
+# CLAI::USER
+
+{{ .Selection }}`);
+					}
+					return true;
+				}
+			}
+		});
+
+		this.addSettingTab(new SettingsTab(this.app, this));
 	}
 
 	onunload() {
-
 	}
 
 	async loadSettings() {
@@ -74,258 +88,5 @@ export default class CLAI extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
-	}
-}
-
-class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
-	plugin: CLAI;
-	dry: boolean = false;
-
-	constructor(app: App, plugin: CLAI) {
-		super(app);
-		this.plugin = plugin;
-		this.setPlaceholder("Select a workflow...");
-	}
-
-	setDry(dry: boolean) {
-		this.dry = dry;
-	}
-
-	getItems(): TFile[] {
-		const workflowFolder = this.plugin.settings.workflowFolder;
-		return this.app.vault.getFiles().filter(file =>
-			file.path.startsWith(workflowFolder) && file.extension === 'md'
-		);
-	}
-
-	getItemText(file: TFile): string {
-		return file.basename;
-	}
-
-	async onChooseItem(file: TFile) {
-		const inputModal = new WorkflowInputModal(this.app, this.plugin);
-		inputModal.setFile(file);
-		inputModal.setDry(this.dry);
-		inputModal.open();
-	}
-}
-
-class WorkflowInputModal extends Modal {
-	file: TFile;
-	plugin: CLAI;
-	input: TextComponent;
-	loadingEl: HTMLElement;
-	dry: boolean = false;
-
-	constructor(app: App, plugin: CLAI) {
-		super(app);
-		this.plugin = plugin;
-	}
-
-	setDry(dry: boolean) {
-		this.dry = dry;
-	}
-
-	setFile(file: TFile) {
-		this.file = file;
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.empty();
-
-		contentEl.createEl('b', { text: `Run Workflow: ${this.file.basename}` });
-		contentEl.createEl('p', { text: `You can now input the data that should be passed to the workflow and hit ENTER.` });
-
-		const inputContainer = contentEl.createDiv('input-container');
-		this.input = new TextComponent(inputContainer);
-		this.input.inputEl.style.width = '100%';
-		this.input
-			.setPlaceholder("Workflow Input...");
-
-		this.loadingEl = contentEl.createDiv('loading-container');
-		this.loadingEl.setText('Processing...');
-		this.loadingEl.style.display = 'none';
-		this.loadingEl.style.textAlign = 'center';
-		this.loadingEl.style.marginTop = '10px';
-
-		this.input.inputEl.addEventListener('keydown', async (event) => {
-			if (event.key === 'Enter') {
-				this.input.setDisabled(true);
-				this.loadingEl.style.display = 'block';
-
-				try {
-					const res = await runCLAI(this.plugin.settings, this.file.path, this.input.getValue(), this.app, { dry: !!this.dry });
-					const editor = this.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
-					editor?.replaceSelection(res);
-					this.close();
-				} catch (error) {
-					console.error('CLAI processing failed:', error);
-					this.loadingEl.setText('Processing failed. Please try again.');
-					this.input.setDisabled(false);
-				}
-			}
-		});
-
-		this.input.inputEl.focus();
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		const { contentEl } = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
-	}
-}
-
-class SettingsTag extends PluginSettingTab {
-	plugin: CLAI;
-	version: string;
-
-	constructor(app: App, plugin: CLAI) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty();
-
-		containerEl.createEl('h1', { text: 'Settings for CL(A)I' });
-
-		// first time setup button
-		const firstTimeSetupButton = containerEl.createEl('button', { text: 'Install / Update CL(A)I' });
-		const statusEl = containerEl.createEl('span', { text: '' });
-		statusEl.style.marginLeft = '10px';
-
-		firstTimeSetupButton.addEventListener('click', async () => {
-			try {
-				firstTimeSetupButton.disabled = true;
-				statusEl.setText('Installing...');
-				await fetchCLAI(this.plugin.app);
-				statusEl.setText('✓ Installation complete!');
-				statusEl.style.color = 'green';
-			} catch (error) {
-				statusEl.setText('❌ Installation failed: ' + (error instanceof Error ? error.message : String(error)));
-				statusEl.style.color = 'red';
-			} finally {
-				firstTimeSetupButton.disabled = false;
-			}
-		});
-
-		containerEl.createEl('p', { text: 'You need to install clai the first time you use this plugin!' });
-
-		const checkVersionButton = containerEl.createEl('button', { text: 'Check Version' });
-		checkVersionButton.addEventListener('click', async () => {
-			try {
-				const version = await runCLAIVersion(this.plugin.app);
-				this.version = version;
-				this.display();
-			} catch (error) {
-				this.version = 'Error: CLAI not installed?';
-				this.display();
-				return;
-			}
-		});
-
-		if (this.version) {
-			containerEl.createEl('p', { text: `${this.version}` });
-		}
-
-		containerEl.createEl('h1', { text: 'API Settings' });
-
-		new Setting(containerEl)
-			.setName('API Provider')
-			.setDesc('Select the API provider')
-			.addDropdown(dropdown => dropdown
-				.addOption('openai', 'OpenAI')
-				.addOption('openrouter', 'OpenRouter')
-				.addOption('custom', 'Custom')
-				.setValue(this.plugin.settings.provider)
-				.onChange(async (value) => {
-					this.plugin.settings.provider = value as CLAISettings['provider'];
-					this.plugin.settings.url = DEFAULT_URLS[this.plugin.settings.provider];
-					await this.plugin.saveSettings();
-					this.display();
-				}));
-
-		if (this.plugin.settings.provider === 'custom') {
-			new Setting(containerEl)
-				.setName('API URL')
-				.setDesc('Enter your API URL')
-				.addText(text => text
-					.setPlaceholder('Enter your API URL')
-					.setValue(this.plugin.settings.url)
-					.onChange(async (value) => {
-						this.plugin.settings.url = value;
-						await this.plugin.saveSettings();
-					}));
-		}
-
-		new Setting(containerEl)
-			.setName('API Model')
-			.setDesc('Enter your API model')
-			.addText(text => text
-				.setPlaceholder('Enter your API model')
-				.setValue(this.plugin.settings.model)
-				.onChange(async (value) => {
-					this.plugin.settings.model = value;
-					await this.plugin.saveSettings();
-				}));
-
-		new Setting(containerEl)
-			.setName('API Key')
-			.setDesc('Enter your API key')
-			.addText(text => text
-				.setPlaceholder('Enter your API key')
-				.setValue(this.plugin.settings.apiKey)
-				.onChange(async (value) => {
-					this.plugin.settings.apiKey = value;
-					await this.plugin.saveSettings();
-				}));
-
-
-		containerEl.createEl('h1', { text: 'Workflows' });
-
-		new Setting(containerEl)
-			.setName('Workflow Folder')
-			.setDesc('Enter your workflow folder')
-			.addText(text => text
-				.setPlaceholder('Enter your workflow folder')
-				.setValue(this.plugin.settings.workflowFolder)
-				.onChange(async (value) => {
-					this.plugin.settings.workflowFolder = value;
-					await this.plugin.saveSettings();
-				}));
-
-		containerEl.createEl('h1', { text: 'Links' });
-
-		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
-			div.createEl('span', { text: 'Plugin on Github: ' });
-			div.createEl('a', { text: 'https://github.com/BigJk/clai-obsidian', href: 'https://github.com/BigJk/clai-obsidian' });
-		});
-		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
-			div.createEl('span', { text: 'CL(A)I on Github: ' });
-			div.createEl('a', { text: 'https://github.com/BigJk/clai', href: 'https://github.com/BigJk/clai' });
-		});
-		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
-			div.createEl('span', { text: 'Buy me a coffee: ' });
-			div.createEl('a', { text: 'https://ko-fi.com/BigJk', href: 'https://ko-fi.com/BigJk' });
-		});
 	}
 }

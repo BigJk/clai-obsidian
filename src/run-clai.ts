@@ -1,5 +1,5 @@
-import { type CLAISettings } from "../main";
 import { App } from 'obsidian';
+import { CLAISettings } from './types';
 
 // @ts-ignore
 const process = (window as any).require('process');
@@ -7,12 +7,12 @@ const process = (window as any).require('process');
 // @ts-ignore
 const childProcess = (window as any).require('child_process');
 
-export async function runCLAI(settings: CLAISettings, file: string, userInput: string, app: App, opts?: { dry: boolean }): Promise<string> {
+export async function runCLAI(settings: CLAISettings, file: string, userInput: any, app: App, opts?: { dry: boolean }): Promise<string> {
     process.env.CLAI_URL = settings.url;
     process.env.CLAI_APIKEY = settings.apiKey;
     process.env.CLAI_MODEL = settings.model;
 
-    console.log(`[CLAI] Running CLAI on file: ${file} with input: ${userInput}`);
+    console.log(`[CLAI] Running CLAI on file: ${file} with input: ${JSON.stringify(userInput)}`);
 
     // Get the vault's base path
     const basePath = (app.vault.adapter as any).basePath;
@@ -20,7 +20,7 @@ export async function runCLAI(settings: CLAISettings, file: string, userInput: s
     return new Promise((resolve, reject) => {
         childProcess.execFile(
             basePath + `/.obsidian/plugins/clai-obsidian/clai-${process.platform}-${process.arch}${process.platform === 'win32' ? '.exe' : ''}`,
-            ['run', ...(opts?.dry ? ['--dry'] : []), file, userInput],
+            ['run', ...(opts?.dry ? ['--dry'] : []), file, JSON.stringify(userInput)],
             { cwd: basePath },
             (error: Error | null, stdout: string, stderr: string) => {
                 if (error) {
