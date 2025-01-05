@@ -1,7 +1,7 @@
 {
 	"id": "clai-obsidian",
 	"name": "CL(A)I Obsidian",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"minAppVersion": "0.15.0",
 	"description": "Brings CL(A)I to Obsidian",
 	"author": "BigJk",
