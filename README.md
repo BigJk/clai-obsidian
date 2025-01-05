@@ -23,11 +23,11 @@ You can also use the command `Run Workflow (Dry)` to insert the content that wou
 Let's walk you through an example of what I use CL(A)I for to understand how it works.
 
 1. Imagine you have a `monsters` folder in your vault.
-2. In the `monsters` folder, you have all kinds of monsters for your TTRPG.
+2. In the `monsters` folder, you have all kinds of monsters for your TTRPG as separate notes.
 3. Additionally, you have a `setting.md` file where a quick description of the setting is stored.
 4. You want to generate a random monster.
 
-Now you can create a `NewMonster` markdown file in the `clai-workflows` folder and input:
+Now you can create a `NewMonster` note in the `clai-workflows` folder and input:
 
 ```markdown
 # CLAI::SYSTEM
@@ -53,6 +53,8 @@ Thank you for the examples! Now tell me about the monster you want to generate.
 {{ .Input }}
 ```
 
+Now you can run the workflow by pressing the `Run Workflow` command and selecting `NewMonster`.
+
 Let's break down what the workflow does:
 
 - The `# CLAI::SYSTEM` defines the system prompt for this workflow.
@@ -62,4 +64,4 @@ Let's break down what the workflow does:
 - The `# CLAI::ASSISTANT` defines the assistant message.
 - The `{{ .Input }}` inserts the input from the user, which the plugin will let you input.
 
-For more information about the ``call`` functions, see the [CL(A)I documentation](https://github.com/BigJk/clai). 
+For more information about the `call` functions, see the [CL(A)I documentation](https://github.com/BigJk/clai). 
