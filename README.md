@@ -14,9 +14,33 @@ When the plugin is installed, you need to go to the settings:
 
 ## Usage
 
-Once the plugin is installed, you can use the command `Run Workflow` to run a workflow. This will let you select the workflow and input the data that should be passed to the workflow and hit ENTER. **The result will be inserted into the current cursor position.**
+- After installing the plugin, you can use the `Run Workflow` command to execute a workflow. This allows you to select the desired workflow, and the result will be inserted at the current cursor position or replace the current selection.
+- For testing or debugging purposes, use the `Run Workflow (Dry)` command. This inserts the content that would be sent to the API at the current cursor position without actually executing the workflow.
+- To quickly set up a new workflow, use the `Insert Boilerplate` command. This will insert the basic structure of a workflow at the current cursor position.
+- To simplify the process of creating a workflow, use the `Insert Template Statement` command. This inserts a template statement at the current cursor position, making it easier to build your workflow.
 
-You can also use the command `Run Workflow (Dry)` to insert the content that would be send to the API into the current cursor position without actually running the workflow. This is useful for testing / debugging the workflow.
+## Template Tags
+
+The plugin supports various template tags that can be inserted using the `Insert Template Statement` command:
+
+### File Operations
+- `{{ call .File "./path/to/file.md" }}`: Inserts the entire contents of the specified file
+- `{{ call .SampleFiles "./folder/" n meta }}`: Inserts `n` random files from the specified folder. If `meta` is true, the filename will be passed to the LLM as metadata
+- `{{ call .SampleFilesDeep "./folder/" n meta }}`: Same as SampleFiles but includes files from subfolders
+- `{{ call .SampleLines "./file.md" n }}`: Inserts `n` random lines from the specified file
+- `{{ call .SampleChunk "./file.md" n }}`: Inserts a random chunk of `n` consecutive lines from the specified file
+
+### Context Variables
+- `{{ .Clipboard }}`: Inserts the current contents of your clipboard
+- `{{ .ActiveTitle }}`: Inserts the title of the currently active note
+- `{{ .ActiveNote }}`: Inserts the entire contents of the currently active note
+- `{{ .Selection }}`: Inserts the currently selected text in the editor
+
+You can easily insert any of these tags using the `Insert Template Statement` command, which provides an interactive interface with:
+1. A fuzzy-searchable list of all available template types with explanations
+2. File/folder picker for paths when needed
+3. Number selector for quantities
+4. Yes/No prompts for metadata inclusion
 
 ## Use Case Example: Generating Random Monsters
 
@@ -50,7 +74,7 @@ Thank you for the examples! Now tell me about the monster you want to generate.
 
 # CLAI::USER
 
-{{ .Input }}
+{{ .Selection }}
 ```
 
 Now you can run the workflow by pressing the `Run Workflow` command and selecting `NewMonster`.
@@ -62,6 +86,6 @@ Let's break down what the workflow does:
   - The `{{ call .File "./setting.md" }}` inserts the content of the `setting.md` file.
   - The `{{ call .SampleFiles "./monsters/" 3 false }}` inserts 3 random files from the `monsters` folder used as examples. The `false` indicates that the file names should not be included.
 - The `# CLAI::ASSISTANT` defines the assistant message.
-- The `{{ .Input }}` inserts the input from the user, which the plugin will let you input.
+- The `{{ .Selection }}` inserts the current selection from the user.
 
 For more information about the `call` functions, see the [CL(A)I documentation](https://github.com/BigJk/clai). 
