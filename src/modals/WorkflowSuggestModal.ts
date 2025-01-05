@@ -54,7 +54,7 @@ export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
                     text: description
                 });
                 div.style.opacity = '0.5';
-                div.style.zoom = '0.8';
+                (div.style as any).zoom = '0.8';
             }
         }
     }
