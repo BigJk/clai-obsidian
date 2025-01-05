@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.0",
+	"id": "clai-obsidian",
+	"name": "CL(A)I Obsidian",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"description": "Brings CL(A)I to Obsidian",
+	"author": "BigJk",
+	"authorUrl": "https://github.com/BigJk",
+	"fundingUrl": "https://ko-fi.com/BigJk",
+	"isDesktopOnly": true
 }
