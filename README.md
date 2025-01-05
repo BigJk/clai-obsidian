@@ -1,94 +1,57 @@
-# Obsidian Sample Plugin
+# CL(A)I for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other use cases.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+For more information, visit the [CL(A)I documentation](https://github.com/BigJk/clai).
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Setup
 
-## First time developing plugins?
+When the plugin is installed, you need to go to the settings:
+1. Press the button to install / update CL(A)I; this will fetch the latest version of CL(A)I from GitHub.
+2. Select your API provider (OpenAI, OpenRouter, or Custom).
+3. Enter your API key.
+4. Select the model you want to use.
 
-Quick starting guide for new plugin devs:
+## Use Case Example: Generating Random Monsters
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+Let's walk you through an example of what I use CL(A)I for to understand how it works.
 
-## Releasing new releases
+1. Imagine you have a `monsters` folder in your vault.
+2. In the `monsters` folder, you have all kinds of monsters for your TTRPG.
+3. Additionally, you have a `setting.md` file where a quick description of the setting is stored.
+4. You want to generate a random monster.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+Now you can create a `NewMonster` markdown file in the `clai-workflows` folder and input:
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+```markdown
+# CLAI::SYSTEM
 
-## Adding your plugin to the community plugin list
+You are a helpful assistant that generates new monsters for a tabletop roleplaying game. You will generate a new monster based on the given input.
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+# CLAI::USER
 
-## How to use
+This is the setting:
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+{{ call .File "./setting.md" }}
 
-## Manually installing the plugin
+Here are some examples of monsters:
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+{{ call .SampleFiles "./monsters/" 3 false }}
 
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+# CLAI::ASSISTANT
 
-## Funding URL
+Thank you for the examples! Now tell me about the monster you want to generate.
 
-You can include funding URLs where people who use your plugin can financially support it.
+# CLAI::USER
 
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+{{ .Input }}
 ```
 
-If you have multiple URLs, you can also do:
+Let's break down what the workflow does:
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+- The `# CLAI::SYSTEM` defines the system prompt for this workflow.
+- The following `# CLAI::USER` defines a user message:
+  - The `{{ call .File "./setting.md" }}` inserts the content of the `setting.md` file.
+  - The `{{ call .SampleFiles "./monsters/" 3 false }}` inserts 3 random files from the `monsters` folder used as examples. The `false` indicates that the file names should not be included.
+- The `# CLAI::ASSISTANT` defines the assistant message.
+- The `{{ .Input }}` inserts the input from the user, which the plugin will let you input.
