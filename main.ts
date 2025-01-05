@@ -210,8 +210,22 @@ class SettingsTag extends PluginSettingTab {
 
 		// first time setup button
 		const firstTimeSetupButton = containerEl.createEl('button', { text: 'Install / Update CL(A)I' });
+		const statusEl = containerEl.createEl('span', { text: '' });
+		statusEl.style.marginLeft = '10px';
+
 		firstTimeSetupButton.addEventListener('click', async () => {
-			fetchCLAI(this.plugin.app);
+			try {
+				firstTimeSetupButton.disabled = true;
+				statusEl.setText('Installing...');
+				await fetchCLAI(this.plugin.app);
+				statusEl.setText('✓ Installation complete!');
+				statusEl.style.color = 'green';
+			} catch (error) {
+				statusEl.setText('❌ Installation failed: ' + (error instanceof Error ? error.message : String(error)));
+				statusEl.style.color = 'red';
+			} finally {
+				firstTimeSetupButton.disabled = false;
+			}
 		});
 
 		containerEl.createEl('p', { text: 'You need to install clai the first time you use this plugin!' });
@@ -298,5 +312,20 @@ class SettingsTag extends PluginSettingTab {
 					this.plugin.settings.workflowFolder = value;
 					await this.plugin.saveSettings();
 				}));
+
+		containerEl.createEl('h1', { text: 'Links' });
+
+		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
+			div.createEl('span', { text: 'Plugin on Github: ' });
+			div.createEl('a', { text: 'https://github.com/BigJk/clai-obsidian', href: 'https://github.com/BigJk/clai-obsidian' });
+		});
+		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
+			div.createEl('span', { text: 'CL(A)I on Github: ' });
+			div.createEl('a', { text: 'https://github.com/BigJk/clai', href: 'https://github.com/BigJk/clai' });
+		});
+		containerEl.createEl('div', { cls: 'link-entry' }, (div) => {
+			div.createEl('span', { text: 'Buy me a coffee: ' });
+			div.createEl('a', { text: 'https://ko-fi.com/BigJk', href: 'https://ko-fi.com/BigJk' });
+		});
 	}
 }

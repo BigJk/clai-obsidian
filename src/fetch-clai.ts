@@ -135,7 +135,7 @@ async function cleanupOldFiles(pluginPath: string, tarName: string, binaryName?:
  */
 async function renameBinary(pluginPath: string, binaryName: string) {
     try {
-        await fs.promises.rename(`${pluginPath}/clai`, `${pluginPath}/${binaryName}`);
+        await fs.promises.rename(`${pluginPath}/clai${process.platform === 'win32' ? '.exe' : ''}`, `${pluginPath}/${binaryName}`);
     } catch (error) {
         console.error('[CLAI] Error renaming CLAI binary:', error);
     }
@@ -146,11 +146,19 @@ async function renameBinary(pluginPath: string, binaryName: string) {
  * @param app Obsidian app
  */
 export async function fetchCLAI(app: App) {
-    const os = process.platform;
-    const arch = process.arch;
+    let os = process.platform as string;
+    if (os === 'win32') {
+        os = 'windows';
+    }
+
+    let arch = process.arch as string;
+    if (arch === 'x64') {
+        arch = 'amd64';
+    }
+
     const basePath = (app.vault.adapter as any).basePath;
     const pluginPath = `${basePath}/.obsidian/plugins/clai-obsidian`;
-    const binaryName = `clai-${os}-${arch}${os === 'win32' ? '.exe' : ''}`;
+    const binaryName = `clai-${process.platform}-${process.arch}${os === 'windows' ? '.exe' : ''}`;
     const tarName = `${binaryName}.tar.gz`;
 
     console.log(`[CLAI] Fetching CLAI for ${os}-${arch}`);
