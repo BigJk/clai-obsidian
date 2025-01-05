@@ -12,6 +12,12 @@ When the plugin is installed, you need to go to the settings:
 3. Enter your API key.
 4. Select the model you want to use.
 
+## Usage
+
+Once the plugin is installed, you can use the command `Run Workflow` to run a workflow. This will let you select the workflow and input the data that should be passed to the workflow and hit ENTER. **The result will be inserted into the current cursor position.**
+
+You can also use the command `Run Workflow (Dry)` to insert the content that would be send to the API into the current cursor position without actually running the workflow. This is useful for testing / debugging the workflow.
+
 ## Use Case Example: Generating Random Monsters
 
 Let's walk you through an example of what I use CL(A)I for to understand how it works.
@@ -55,3 +61,5 @@ Let's break down what the workflow does:
   - The `{{ call .SampleFiles "./monsters/" 3 false }}` inserts 3 random files from the `monsters` folder used as examples. The `false` indicates that the file names should not be included.
 - The `# CLAI::ASSISTANT` defines the assistant message.
 - The `{{ .Input }}` inserts the input from the user, which the plugin will let you input.
+
+For more information about the ``call`` functions, see the [CL(A)I documentation](https://github.com/BigJk/clai). 
