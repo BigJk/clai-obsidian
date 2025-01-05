@@ -7,7 +7,9 @@
 ![Screenshot](./.github/screenshot.png)
 
 > [!NOTE]  
-> In the above example the left workflow results in the right result when run. The template syntax essentially tells the template to insert the ``settings`` note where the basic information about the setting is stored. Then the notes ``race``, ``background``and ``cities`` contain said content as list. The Template will take random lines from them before sending it to the LLM.
+> In the above example the left workflow results in the right result when run. The template syntax essentially tells the template to insert the ``setting`` note where the basic information about the setting is stored. Then the notes ``race``, ``background``and ``cities`` contain said content as list. The Template will take random lines from them before sending it to the LLM. For example ``{{ call .SampleLines "./races.md" 1 }}`` means ``to take 1 random line from the races.md note and put it there``.
+>
+> With this you can build really creative generator workflows!
 
 ## Setup
 
