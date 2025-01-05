@@ -24,6 +24,15 @@ export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
     }
 
     getItemText(file: TFile): string {
+        const cache = this.app.metadataCache.getFileCache(file);
+
+        if (cache?.frontmatter) {
+            const { name, description } = cache.frontmatter;
+            if (name) {
+                return `${name} - ${description}`;
+            }
+        }
+
         return file.basename;
     }
 

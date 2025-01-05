@@ -28,7 +28,6 @@ export class WorkflowInputModal extends Modal {
 
         let loadingEl = contentEl.createDiv('loading-container');
         loadingEl.setText('Processing...');
-        loadingEl.style.textAlign = 'center';
         loadingEl.style.marginTop = '10px';
 
         const editor = this.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
