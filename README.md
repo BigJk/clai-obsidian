@@ -104,7 +104,7 @@ For more information about the `call` functions, see the [CL(A)I documentation](
 
 I didn't know about the awesome [Text Generator](https://github.com/nhaouari/obsidian-textgenerator-plugin) initially because `CL(A)I` started without Obsidian in mind, only after building it I realized that I wanted the functionality of it inside of Obsidian too. So to make it quick:
 - `CL(A)I` is also a standalone CLI tool that can be used without Obsidian, while `Text Generator` is a plugin for Obsidian and tightly integrated with it.
-- `CL(A)I` focuses more on the ``take random notes from folder``, ``take random lines from note``, ``insert note X here`` use cases to build interesting base for the LLMs. I think `Text Generator` doesn't cover this in the same way.
+- `CL(A)I` focuses more on the ``take random notes from folder``, ``take random lines from note``, ``insert note X here`` use cases to build a interesting base for the LLMs. I think `Text Generator` doesn't cover this in the same way.
 - `Text Generator` has a template hub where you can share your own templates, while `CL(A)I` doesn't
 - `CL(A)I` has a different syntax based on go's [html/template](https://pkg.go.dev/html/template) 
 - Both support a wide range of models
