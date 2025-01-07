@@ -2,11 +2,14 @@ import { App, Modal, MarkdownView, TFile } from 'obsidian';
 import CLAI from 'main';
 import { runCLAI } from 'src/clai/run';
 import { InsertionMode } from 'src/commands/run-workflow';
+import { WorkflowUserInputModal } from './WorkflowUserInputModal';
+import { FileSuggestModal } from './FileSuggestModal';
 
 export class WorkflowInputModal extends Modal {
     file: TFile;
     plugin: CLAI;
     dry: boolean = false;
+    onlyLoader: boolean = false;
     insertionMode: InsertionMode = InsertionMode.ReplaceSelection;
 
     constructor(app: App, plugin: CLAI) {
@@ -20,6 +23,10 @@ export class WorkflowInputModal extends Modal {
 
     setFile(file: TFile) {
         this.file = file;
+    }
+
+    setOnlyLoader(onlyLoader: boolean) {
+        this.onlyLoader = onlyLoader;
     }
 
     setInsertionMode(mode: InsertionMode) {
@@ -36,19 +43,75 @@ export class WorkflowInputModal extends Modal {
         loadingEl.setText('Processing...');
         loadingEl.style.marginTop = '10px';
 
+        if (this.onlyLoader) {
+            return;
+        }
+
         const editor = this.app.workspace.getActiveViewOfType(MarkdownView)?.editor;
         if (!editor) {
             this.close();
             return;
         }
 
+        this.app.vault.read(this.file).then((workflowContent) => {
+            const additionalSteps: Promise<any>[] = [];
+
+            if (workflowContent.includes('.Input')) {
+                additionalSteps.push(new Promise((resolve) => {
+                    const inputModal = new WorkflowUserInputModal(this.app, (userInput) => {
+                        resolve({ Input: userInput });
+                    });
+                    inputModal.open();
+                }));
+            }
+
+            if (workflowContent.includes('.AskForNote')) {
+                additionalSteps.push(new Promise((resolve) => {
+                    const fileModal = new FileSuggestModal(this.app, editor, (file: TFile) => {
+                        this.app.vault.read(file).then((content) => {
+                            resolve({ AskForNote: content });
+                        });
+                    });
+                    fileModal.setPlaceholder('Select a note...');
+                    fileModal.open();
+                }));
+            }
+
+            if (additionalSteps.length === 0) {
+                this.executeWorkflow(editor);
+            } else {
+                this.close();
+                Promise.all(additionalSteps).then((results) => {
+                    this.setOnlyLoader(true);
+                    this.open();
+                    this.executeWorkflow(editor, Object.assign({}, ...results))
+                }).catch((error) => {
+                    console.log('CLAI processing failed:', error);
+                });
+            }
+        });
+    }
+
+    private executeWorkflow(editor: any, additional?: any) {
+        const contentEl = this.contentEl;
+        contentEl.empty();
+        const loadingEl = contentEl.createDiv();
+        loadingEl.setText('Processing...');
+
         navigator.clipboard.readText().then((clipboard) => {
-            runCLAI(this.plugin.settings, this.file.path, {
+            const data = {
                 Selection: editor.getSelection(),
                 Clipboard: clipboard,
                 ActiveTitle: this.app.workspace.getActiveFile()?.basename,
                 ActiveNote: editor.getValue(),
-            }, this.app, { dry: !!this.dry }).then((res) => {
+            };
+
+            // Add user input if provided
+            if (additional !== undefined) {
+                Object.assign(data, additional);
+            }
+
+            runCLAI(this.plugin.settings, this.file.path, data, this.app, { dry: !!this.dry }).then((res) => {
                 const cursor = editor.getCursor();
                 const selection = editor.getSelection();
 

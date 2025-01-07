@@ -16,7 +16,9 @@ enum TemplateType {
     Clipboard = 'Clipboard',
     ActiveTitle = 'Active Title',
     ActiveNote = 'Active Note',
-    Selection = 'Selection'
+    Selection = 'Selection',
+    Input = 'Input',
+    AskForNote = 'Ask For Note'
 }
 
 function getTemplateTypeExplanation(type: TemplateType): string {
@@ -42,7 +44,11 @@ function getTemplateTypeExplanation(type: TemplateType): string {
         case TemplateType.ActiveNote:
             return 'Inserts the contents of the active note.';
         case TemplateType.Selection:
-            return 'Inserts the selected text.';
+            return 'Inserts the current selection.';
+        case TemplateType.Input:
+            return 'Prompts for user input when running the workflow.';
+        case TemplateType.AskForNote:
+            return 'Opens a file selector to choose a note from your vault.';
         default:
             return 'Unknown template type.';
     }
@@ -159,6 +165,12 @@ export const insertTemplateCommand = (plugin: CLAI) => {
                         break;
                     case TemplateType.Selection:
                         editor.replaceSelection('{{ .Selection }}');
+                        break;
+                    case TemplateType.Input:
+                        editor.replaceSelection('{{ .Input }}');
+                        break;
+                    case TemplateType.AskForNote:
+                        editor.replaceSelection('{{ .AskForNote }}');
                         break;
                 }
             });
