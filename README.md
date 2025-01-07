@@ -109,7 +109,8 @@ description: "Generates a random monster based on selection text"
 
 # CLAI::SYSTEM
 
-You are a helpful assistant that generates new monsters for a tabletop roleplaying game. You will generate a new monster based on the given input.
+You are a helpful assistant that generates new monsters for a tabletop roleplaying game.
+You will generate a new monster based on the given input.
 
 # CLAI::USER
 
