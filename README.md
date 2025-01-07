@@ -73,7 +73,9 @@ description: "Refactor based on input"
 
 # CLAI::SYSTEM
 
-You are a helpful assistant that refactors text. Only output the refactored text, nothing else. Your goal is: {{ .Input }}
+You are a helpful assistant that refactors text.
+Only output the refactored text, nothing else.
+Your goal is: {{ .Input }}
 
 # CLAI::USER
 
