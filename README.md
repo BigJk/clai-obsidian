@@ -2,7 +2,7 @@
 
 [![Discord](https://img.shields.io/discord/1099310842564059168?label=discord)](https://discord.gg/XpDvfvVuB2) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/BigJk/clai-obsidian)](https://github.com/BigJk/clai-obsidian/releases)
 
-*This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate or modify content. This is useful for automating things like creating notes for TTRPGs and other repetitive use cases (summarises, convert to bullpoints, spell & grammar check, and more). CL(A)I can serve as a LLM macro toolbox in Obsidian.*
+*This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate or modify content. This is useful for automating things like creating notes for TTRPGs and other repetitive use cases (summarise, convert to bullpoints, spell & grammar check, and more). CL(A)I can serve as a LLM macro toolbox in Obsidian.*
 
 ---
 
