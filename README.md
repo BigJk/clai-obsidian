@@ -2,7 +2,7 @@
 
 [![Discord](https://img.shields.io/discord/1099310842564059168?label=discord)](https://discord.gg/XpDvfvVuB2) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/BigJk/clai-obsidian)](https://github.com/BigJk/clai-obsidian/releases)
 
-*This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate content. This is useful for TTRPGs and other repetitive use cases.*
+*This is a plugin to add [CL(A)I](https://github.com/BigJk/clai) to Obsidian. CL(A)I is an LLM helper to quickly run workflows to generate or modify content. This is useful for TTRPGs and other repetitive use cases. CL(A)I can serve as like a LLM macro toolbox in Obsidian.*
 
 ---
 
@@ -37,6 +37,10 @@ When the plugin is installed, you need to go to the settings:
 
 The plugin supports various template tags that can be inserted using the `Insert Template Statement` command:
 
+### Interactive Variables
+- `{{ .Input }}`: Prompts the user for input when the workflow is run. The entered text will be inserted at this position.
+- `{{ .AskForNote }}`: Opens a file selector to choose a note from your vault. The content of the selected note will be inserted at this position.
+
 ### File Operations
 - `{{ call .File "./path/to/file.md" }}`: Inserts the entire contents of the specified file
 - `{{ call .SampleFiles "./folder/" n meta }}`: Inserts `n` random files from the specified folder. If `meta` is true, the filename will be passed to the LLM as metadata
@@ -56,6 +60,34 @@ You can easily insert any of these tags using the `Insert Template Statement` co
 3. Number selector for quantities
 4. Yes/No prompts for metadata inclusion
 
+## Use Case Example: Refactor Text
+
+A very simple example of what you can do with CL(A)I is to refactor the selected text based on user input. 
+You can create a `Refactor` note in the `clai-workflows` folder and input:
+
+```markdown
+---
+name: "📙 Refactor"
+description: "Refactor based on input"
+---
+
+# CLAI::SYSTEM
+
+You are a helpful assistant that refactors text. Only output the refactored text, nothing else. Your goal is: {{ .Input }}
+
+# CLAI::USER
+
+{{ .Selection }}
+```
+
+Let's break down what the workflow does:
+
+- The frontmatter defines the name and description of the workflow that will be shown in the selection list.
+- The `# CLAI::SYSTEM` defines the system prompt for this workflow.
+  - When `{{ .Input }}` is present running the workflow will open a text input dialog. The result will be inserted at this position.
+- The following `# CLAI::USER` defines a user message:
+  - The `{{ .Selection }}` inserts the current selection from the user.
+
 ## Use Case Example: Generating Random Monsters
 
 Let's walk you through an example of what I use CL(A)I for to understand how it works.
@@ -68,6 +100,11 @@ Let's walk you through an example of what I use CL(A)I for to understand how it 
 Now you can create a `NewMonster` note in the `clai-workflows` folder and input:
 
 ```markdown
+---
+name: "🐊 Generate a random Monster"
+description: "Generates a random monster based on selection text"
+---
+
 # CLAI::SYSTEM
 
 You are a helpful assistant that generates new monsters for a tabletop roleplaying game. You will generate a new monster based on the given input.
@@ -95,6 +132,7 @@ Now you can run the workflow by pressing the `Run Workflow` command and selectin
 
 Let's break down what the workflow does:
 
+- The frontmatter defines the name and description of the workflow that will be shown in the selection list.
 - The `# CLAI::SYSTEM` defines the system prompt for this workflow.
 - The following `# CLAI::USER` defines a user message:
   - The `{{ call .File "./setting.md" }}` inserts the content of the `setting.md` file.
@@ -109,6 +147,7 @@ For more information about the `call` functions, see the [CL(A)I documentation](
 I didn't know about the awesome [Text Generator](https://github.com/nhaouari/obsidian-textgenerator-plugin) initially because `CL(A)I` started without Obsidian in mind, only after building it I realized that I wanted the functionality of it inside of Obsidian too. So to make it quick:
 - `CL(A)I` is also a standalone CLI tool that can be used without Obsidian, while `Text Generator` is a plugin for Obsidian and tightly integrated with it.
 - `CL(A)I` focuses more on the ``take random notes from folder``, ``take random lines from note``, ``insert note X here`` use cases to build a interesting base for the LLMs. I think `Text Generator` doesn't cover this in the same way.
+- `CL(A)I` supports dynamic variables like `{{ .Input }}` and `{{ .AskForNote }}` that prompt for additional input, when running the workflow.
 - `Text Generator` has a template hub where you can share your own templates, while `CL(A)I` doesn't
 - `CL(A)I` has a different syntax based on go's [html/template](https://pkg.go.dev/html/template) 
 - `CL(A)I` lets you define system, user and assistant messages however you want on per template basis. I think `Text Generator` doesn't let you do this.
