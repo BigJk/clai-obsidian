@@ -9,6 +9,8 @@ enum TemplateType {
     File = 'File',
     SampleFiles = 'Sample Files',
     SampleFilesDeep = 'Sample Files Deep',
+    SampleFilesPattern = 'Sample Files Pattern',
+    SampleFilesPatternDeep = 'Sample Files Pattern Deep',
     SampleLines = 'Sample Lines',
     SampleChunk = 'Sample Chunk',
     Clipboard = 'Clipboard',
@@ -25,6 +27,10 @@ function getTemplateTypeExplanation(type: TemplateType): string {
             return 'Inserts a random file from a folder.';
         case TemplateType.SampleFilesDeep:
             return 'Inserts a random file from a folder, including subfolders.';
+        case TemplateType.SampleFilesPattern:
+            return 'Inserts a random file whos content matches a pattern from a folder.';
+        case TemplateType.SampleFilesPatternDeep:
+            return 'Inserts a random file whos content matches a pattern from a folder, including subfolders.';
         case TemplateType.SampleLines:
             return 'Inserts a random line from a file.';
         case TemplateType.SampleChunk:
@@ -106,6 +112,24 @@ export const insertTemplateCommand = (plugin: CLAI) => {
                             new NumberSuggestModal(plugin.app, editor, (count: number) => {
                                 new BooleanSuggestModal(plugin.app, editor, (insertMeta: boolean) => {
                                     editor.replaceSelection(`{{ call .SampleFilesDeep "./${folder.path}/" ${count} ${insertMeta} }}`);
+                                }, "Should the filename be passed to the LLM as meta data?").open();
+                            }, 'How many random files should be inserted?').open();
+                        }).open();
+                        break;
+                    case TemplateType.SampleFilesPattern:
+                        new FolderSuggestModal(plugin.app, editor, (folder: TFolder) => {
+                            new NumberSuggestModal(plugin.app, editor, (count: number) => {
+                                new BooleanSuggestModal(plugin.app, editor, (insertMeta: boolean) => {
+                                    editor.replaceSelection(`{{ call .SampleFilesPattern "./${folder.path}/" "pattern" ${count} ${insertMeta} }}`);
+                                }, "Should the filename be passed to the LLM as meta data?").open();
+                            }, 'How many random files should be inserted?').open();
+                        }).open();
+                        break;
+                    case TemplateType.SampleFilesPatternDeep:
+                        new FolderSuggestModal(plugin.app, editor, (folder: TFolder) => {
+                            new NumberSuggestModal(plugin.app, editor, (count: number) => {
+                                new BooleanSuggestModal(plugin.app, editor, (insertMeta: boolean) => {
+                                    editor.replaceSelection(`{{ call .SampleFilesPatternDeep "./${folder.path}/" "pattern" ${count} ${insertMeta} }}`);
                                 }, "Should the filename be passed to the LLM as meta data?").open();
                             }, 'How many random files should be inserted?').open();
                         }).open();

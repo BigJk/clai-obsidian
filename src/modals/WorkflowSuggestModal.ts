@@ -1,10 +1,12 @@
 import CLAI from 'main';
 import { App, FuzzyMatch, FuzzySuggestModal, TFile } from 'obsidian';
 import { WorkflowInputModal } from 'src/modals/WorkflowInputModal';
+import { InsertionMode } from 'src/commands/run-workflow';
 
 export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
     plugin: CLAI;
     dry: boolean = false;
+    insertionMode: InsertionMode = InsertionMode.ReplaceSelection;
 
     constructor(app: App, plugin: CLAI) {
         super(app);
@@ -14,6 +16,10 @@ export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
 
     setDry(dry: boolean) {
         this.dry = dry;
+    }
+
+    setInsertionMode(mode: InsertionMode) {
+        this.insertionMode = mode;
     }
 
     getItems(): TFile[] {
@@ -63,6 +69,7 @@ export class WorkflowSuggestModal extends FuzzySuggestModal<TFile> {
         const inputModal = new WorkflowInputModal(this.app, this.plugin);
         inputModal.setFile(file);
         inputModal.setDry(this.dry);
+        inputModal.setInsertionMode(this.insertionMode);
         inputModal.open();
     }
 }
